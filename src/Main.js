@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 
 const Main = () => {
   const [berries, setBerries] = useState([]);
-  const [berryUrl, setBerryUrl] = useState([]);
+  const [fetchedData, setFetchedData] = useState([]);
   const berryArray = [];
 
   // fetches the initial pokeApi to get the berry names
@@ -17,22 +17,61 @@ const Main = () => {
       })
       .then((data) => {
         data.results.map((result) => {
-          console.log("result", result.url);
           berryArray.push(result.url);
         });
       })
       .then(() => {
-        setBerryUrl(berryArray);
+        setBerries(berryArray);
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
 
-  console.log("berry", berries);
-  // map through berries to get the item url
+  // fetches all of the objects in the api
+  const fetchDataFromUrls = async (urls) => {
+    try {
+      const fetchPromises = urls.map((url) =>
+        fetch(url).then((response) => response.json())
+      );
 
-  return <div>what the fuck</div>;
+      const results = await Promise.all(fetchPromises);
+
+      setFetchedData(results);
+    } catch (error) {
+      console.error("error fetch data:", error);
+    }
+  };
+
+  // checks if there is any content in the berries State before running
+  useEffect(() => {
+    if (berries.length > 0) {
+      const urls = berries.map((item) => item);
+
+      fetchDataFromUrls(urls);
+    }
+  }, [berries]);
+
+  return (
+    <div>
+      {fetchedData.map((sprite) => {
+        const spriteUrl = sprite.sprites.default;
+        const spriteName = sprite.name.replace("-", " ").toUpperCase();
+
+        return (
+          <button className="berryBtn">
+            <p>{spriteName}</p>
+            <img src={spriteUrl} />
+          </button>
+        );
+      })}
+    </div>
+  );
 };
 
 export default Main;
+
+// i need the item url
+// put the item urls in a state
+//
+// fetch the item url and get the sprite links
