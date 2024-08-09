@@ -5,6 +5,18 @@ const Main = () => {
   const [berries, setBerries] = useState([]);
   const [fetchedData, setFetchedData] = useState([]);
   const berryArray = [];
+  const [clickCounts, setClickCounts] = useState({
+    button1: 0,
+    button2: 0,
+    button3: 0,
+    button4: 0,
+    button5: 0,
+    button6: 0,
+    button7: 0,
+    button8: 0,
+    button9: 0,
+    button10: 0,
+  });
 
   // fetches the initial pokeApi to get the berry names
   useEffect(() => {
@@ -47,19 +59,31 @@ const Main = () => {
   useEffect(() => {
     if (berries.length > 0) {
       const urls = berries.map((item) => item);
-
       fetchDataFromUrls(urls);
     }
   }, [berries]);
 
+  const handleButtonClick = (buttonId) => {
+    setClickCounts((prevCounts) => ({
+      ...prevCounts,
+      [buttonId]: prevCounts[buttonId] + 1,
+    }));
+
+    console.log(clickCounts);
+  };
+
   return (
     <div>
-      {fetchedData.map((sprite) => {
+      {fetchedData.map((sprite, key) => {
         const spriteUrl = sprite.sprites.default;
         const spriteName = sprite.name.replace("-", " ").toUpperCase();
 
         return (
-          <button className="berryBtn">
+          <button
+            className="berryBtn"
+            key={key}
+            onClick={() => handleButtonClick("button" + (key + 1))}
+          >
             <p>{spriteName}</p>
             <img src={spriteUrl} />
           </button>
