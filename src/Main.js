@@ -17,6 +17,7 @@ const Main = () => {
     button9: 0,
     button10: 0,
   });
+  const [money, setMoney] = useState(500);
 
   // fetches the initial pokeApi to get the berry names
   useEffect(() => {
@@ -72,19 +73,33 @@ const Main = () => {
     console.log(clickCounts);
   };
 
+  useEffect(() => {
+    if (clickCounts.length > 0) {
+      const berryClick = clickCounts.map((click) => {
+        console.log(click);
+      });
+
+      console.log("berry click", berryClick);
+    }
+  }, [clickCounts]);
+
   return (
     <div>
+      <div>This is how much money you have to spend: ${money}</div>
       {fetchedData.map((sprite, key) => {
         const spriteUrl = sprite.sprites.default;
         const spriteName = sprite.name.replace("-", " ").toUpperCase();
+        const buttonId = "button" + (key + 1);
 
         return (
           <button
             className="berryBtn"
             key={key}
-            onClick={() => handleButtonClick("button" + (key + 1))}
+            onClick={() => handleButtonClick(buttonId)}
           >
+            <p>{clickCounts[buttonId]}</p>
             <p>{spriteName}</p>
+            <p>{key * 1 * clickCounts[buttonId]}</p>
             <img src={spriteUrl} />
           </button>
         );
@@ -99,3 +114,5 @@ export default Main;
 // put the item urls in a state
 //
 // fetch the item url and get the sprite links
+// each berry needs to have a price
+// global value for each berry
