@@ -17,7 +17,20 @@ const Main = () => {
     button9: 0,
     button10: 0,
   });
-  const [money, setMoney] = useState(500);
+  const [money, setMoney] = useState(1000);
+
+  const [priceCheck, setPriceCheck] = useState({
+    button1: false,
+    button2: false,
+    button3: false,
+    button4: false,
+    button5: false,
+    button6: false,
+    button7: false,
+    button8: false,
+    button9: false,
+    button10: false,
+  });
 
   // fetches the initial pokeApi to get the berry names
   useEffect(() => {
@@ -64,13 +77,22 @@ const Main = () => {
     }
   }, [berries]);
 
-  const handleButtonClick = (buttonId) => {
+  const handleButtonClick = (buttonId, incPrice) => {
     setClickCounts((prevCounts) => ({
       ...prevCounts,
       [buttonId]: prevCounts[buttonId] + 1,
     }));
+    // need to do a check of if the price is equal to or less than the money the user has
+    if (incPrice <= money) {
+      console.log(money - incPrice);
+    } else {
+      console.log("you dont have enough money...");
 
-    console.log(clickCounts);
+      setPriceCheck((prevCounts) => ({
+        ...prevCounts,
+        [buttonId]: false,
+      }));
+    }
   };
 
   useEffect(() => {
@@ -91,15 +113,19 @@ const Main = () => {
         const spriteName = sprite.name.replace("-", " ").toUpperCase();
         const buttonId = "button" + (key + 1);
 
+        const basePrice = (key + 1) * 500;
+        const incPrice = basePrice + basePrice * clickCounts[buttonId];
+
         return (
           <button
             className="berryBtn"
             key={key}
-            onClick={() => handleButtonClick(buttonId)}
+            disabled={priceCheck[buttonId]}
+            onClick={() => handleButtonClick(buttonId, incPrice)}
           >
             <p>{clickCounts[buttonId]}</p>
             <p>{spriteName}</p>
-            <p>{key * 1 * clickCounts[buttonId]}</p>
+            <p>$ {clickCounts[buttonId] == 0 ? basePrice : incPrice}</p>
             <img src={spriteUrl} />
           </button>
         );
