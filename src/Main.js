@@ -5,36 +5,33 @@ const Main = () => {
   const [berries, setBerries] = useState([]);
   const [fetchedData, setFetchedData] = useState([]);
   const berryArray = [];
-  const [clickCounts, setClickCounts] = useState({
-    button1: 0,
-    button2: 0,
-    button3: 0,
-    button4: 0,
-    button5: 0,
-    button6: 0,
-    button7: 0,
-    button8: 0,
-    button9: 0,
-    button10: 0,
-  });
+  const [clickCounts, setClickCounts] = useState(
+    {
+      button: 1,
+      counter: 0,
+      isActive: false,
+    },
+    {
+      button: 2,
+      counter: 0,
+      isActive: false,
+    },
+    {
+      button: 3,
+      counter: 0,
+      isActive: false,
+    },
+    {
+      button: 4,
+      counter: 0,
+      isActive: false,
+    }
+  );
   const [money, setMoney] = useState(1000);
-
-  const [priceCheck, setPriceCheck] = useState({
-    button1: false,
-    button2: false,
-    button3: false,
-    button4: false,
-    button5: false,
-    button6: false,
-    button7: false,
-    button8: false,
-    button9: false,
-    button10: false,
-  });
 
   // fetches the initial pokeApi to get the berry names
   useEffect(() => {
-    fetch("https://pokeapi.co/api/v2/item?limit=10&offset=125")
+    fetch("https://pokeapi.co/api/v2/item?limit=4&offset=125")
       .then((response) => {
         if (!response.ok) {
           throw new Error("something wrong");
@@ -77,24 +74,6 @@ const Main = () => {
     }
   }, [berries]);
 
-  const handleButtonClick = (buttonId, incPrice) => {
-    setClickCounts((prevCounts) => ({
-      ...prevCounts,
-      [buttonId]: prevCounts[buttonId] + 1,
-    }));
-    // need to do a check of if the price is equal to or less than the money the user has
-    if (incPrice <= money) {
-      console.log(money - incPrice);
-    } else {
-      console.log("you dont have enough money...");
-
-      setPriceCheck((prevCounts) => ({
-        ...prevCounts,
-        [buttonId]: false,
-      }));
-    }
-  };
-
   useEffect(() => {
     if (clickCounts.length > 0) {
       const berryClick = clickCounts.map((click) => {
@@ -111,21 +90,15 @@ const Main = () => {
       {fetchedData.map((sprite, key) => {
         const spriteUrl = sprite.sprites.default;
         const spriteName = sprite.name.replace("-", " ").toUpperCase();
-        const buttonId = "button" + (key + 1);
+        const buttonId = key + 1;
 
         const basePrice = (key + 1) * 500;
-        const incPrice = basePrice + basePrice * clickCounts[buttonId];
 
         return (
-          <button
-            className="berryBtn"
-            key={key}
-            disabled={priceCheck[buttonId]}
-            onClick={() => handleButtonClick(buttonId, incPrice)}
-          >
-            <p>{clickCounts[buttonId]}</p>
+          <button className="berryBtn" key={key}>
+            <p>{buttonId}</p>
             <p>{spriteName}</p>
-            <p>$ {clickCounts[buttonId] == 0 ? basePrice : incPrice}</p>
+            <p>${basePrice * buttonId}</p>
             <img src={spriteUrl} />
           </button>
         );
